@@ -1,6 +1,9 @@
 ;;; Based largely on https://caiorss.github.io/org-wiki/
 ;;; Thank you caiorss!
 
+(require 'helm-core)
+(require 'projectile)
+
 (defgroup org-simple-wiki nil
   "Settings for the simple org-mode-based wiki"
   :group 'tools)
@@ -26,3 +29,15 @@ Default value ~/org/wiki."
             (dolist (category (split-string (match-string 1)))
               (add-to-list 'categories category))))
       categories)))
+
+(defun org-simple-wiki-default-wiki-files ()
+  "Open files in the default wiki"
+  (interactive)
+  (if (file-accessible-directory-p org-simple-wiki-location)
+      (helm-find-files-1 org-simple-wiki-location))
+      (message "`%s' is not accessible as a directory" org-simple-wiki-location))
+
+(defun org-simple-wiki-current-wiki-files ()
+  "Open files in the default wiki"
+  (interactive)
+  (helm-find-files-1 (projectile-project-root)))
