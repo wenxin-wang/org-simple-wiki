@@ -1,5 +1,5 @@
 #+TITLE: Simple Wiki based on Org mode
-* Simple Org Wiki
+* Introduction
 
 A bunch of helper funcions for a personal wiki. Pages can be grouped by
 directories, and tagged with keywords, which can be used for navigation and
@@ -11,7 +11,10 @@ searching. Depends on `cl-lib`, `helm-projectile` and `helm-ag`.
 #+TITLE: Org Wiki
 #+WIKI_KW: org-mode wiki
 
-* Intro
+* Refs
+wiki:org-mode
+[[wiki:org mode]]
+[[wiki:org mode][Org mode]]
 #+END_SRC
 
 ** Usage
