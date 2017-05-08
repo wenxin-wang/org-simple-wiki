@@ -91,12 +91,14 @@ Default value ~/org/wiki."
   "Open page in wiki"
   (let ((file (concat (file-name-as-directory org-simple-wiki-location) (concat page ".org"))))
     (make-directory (file-name-directory file) t)
-    (if (not (file-exists-p file))
-        (progn (find-file file)
-               (org-simple-wiki--insert-header))
-        (find-file file))))
+    (let ((buffer (get-file-buffer file)))
+      (if buffer (switch-to-buffer buffer)
+        (if (not (file-exists-p file))
+            (progn (find-file file)
+                   (org-simple-wiki--insert-header))
+          (find-file file))))))
 
-(with-eval-after-load "org"
+(with-eval-after-load 'org
   (org-add-link-type "wiki" #'org-simple-wiki--open-page))
 
 (provide 'org-simple-wiki)
