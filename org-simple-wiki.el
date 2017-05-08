@@ -1,8 +1,12 @@
-;;; Based largely on https://caiorss.github.io/org-wiki/
-;;; Thank you caiorss!
+;;; org-simple-wiki.el --- simple wiki extension for org-mode
+;; Inspired by https://caiorss.github.io/org-wiki/
+;; Thank you caiorss!
 
-(require 'helm-core)
-(require 'projectile)
+;; This seems not a package but more like a bunch of helper functions.
+;; I do not think it suits general usage, but feel free to try and change it.
+
+(require 'helm-projectile)
+(require 'helm-ag)
 
 (defgroup org-simple-wiki nil
   "Settings for the simple org-mode-based wiki"
@@ -14,30 +18,29 @@ Default value ~/org/wiki."
   :type 'directory
   :group 'org-simple-wiki)
 
-(defun org-simple-wiki--page-categories ()
-  "Get the categories of current page"
-  (let ((fst-hdr (save-excursion
-                   (goto-char (point-min))
-                   (re-search-forward "^\\*+ +" nil 1)
-                   (point)))
-        (re "^[ \t]*#\\+WIKI_CATEGORIES:[ \t]*\\(.+\\)")
-        (categories '()))
-    (save-excursion
-      (goto-char (point-min))
-      (while (< (point) fst-hdr)
-        (if (re-search-forward re fst-hdr 1)
-            (dolist (category (split-string (match-string 1)))
-              (add-to-list 'categories category))))
-      categories)))
-
-(defun org-simple-wiki-default-wiki-files ()
+(defun org-simple-wiki-find-file ()
   "Open files in the default wiki"
   (interactive)
   (if (file-accessible-directory-p org-simple-wiki-location)
-      (helm-find-files-1 org-simple-wiki-location))
-      (message "`%s' is not accessible as a directory" org-simple-wiki-location))
+      (let ((cwd default-directory))
+        (cd org-simple-wiki-location)
+        (helm-projectile-find-file)
+        (cd cwd))
+      (message "`%s' is not accessible as a directory" org-simple-wiki-location)))
 
-(defun org-simple-wiki-current-wiki-files ()
-  "Open files in the default wiki"
+(defun org-simple-wiki-search-ag ()
+  "Search pages"
   (interactive)
-  (helm-find-files-1 (projectile-project-root)))
+  (helm-do-ag org-simple-wiki-location))
+
+(defun org-simple-wiki-search-keyword-ag ()
+  "Search pages by WIKI_KW"
+  (interactive)
+  (let ((word (or (symbol-at-point) ""))) ; Insert word at point for keyword
+    (with-temp-buffer ; Dirty trick for helm-ag to use customized default input
+      (insert (format "^[ \\t]*#\\+wiki_kw %s" word))
+      (let ((helm-ag--extra-options "-G\\.org$")
+            (helm-ag-insert-at-point 'paragraph))
+        (helm-do-ag org-simple-wiki-location)))))
+
+(provide 'org-simple-wiki)
