@@ -22,11 +22,13 @@ Default value ~/org/wiki."
 (defconst org-simple-wiki--keyword "wiki_kw"
   "The org keyword for wiki keyword, as in #+WIKI_KW: keyword1 keyword2")
 
+;;;###autoload
 (defun org-simple-wiki-search-ag ()
   "Search pages"
   (interactive)
   (helm-do-ag org-simple-wiki-location))
 
+;;;###autoload
 (defun org-simple-wiki-search-keyword-ag (&optional word)
   "Search pages by keywords"
   (interactive)
@@ -39,6 +41,7 @@ Default value ~/org/wiki."
           (helm-ag-insert-at-point 'paragraph))
       (helm-do-ag org-simple-wiki-location))))
 
+;;;###autoload
 (defun org-simple-wiki-find-file ()
   "Open files in the default wiki"
   (interactive)
@@ -59,6 +62,7 @@ Default value ~/org/wiki."
     (remove-duplicates (split-string (buffer-string))
                        :test 'string=)))
 
+;;;###autoload
 (defun org-simple-wiki-find-file-by-keyword ()
   "Find page by existing keywords"
   (interactive)
