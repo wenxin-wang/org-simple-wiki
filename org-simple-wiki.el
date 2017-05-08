@@ -77,4 +77,26 @@ Default value ~/org/wiki."
                           org-simple-wiki-location))
           (action . org-simple-wiki-search-keyword-ag))))
 
+(defun org-simple-wiki--insert-header ()
+  "Insert wiki header at the top of the file."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (insert (format "#+TITLE: %s\n#+%s:\n"
+                    (file-name-base (buffer-file-name))
+                    (upcase org-simple-wiki--keyword)))))
+
+;;===== wiki protocol for org-simple-wiki =====
+(defun org-simple-wiki--open-page (page)
+  "Open page in wiki"
+  (let ((file (concat (file-name-as-directory org-simple-wiki-location) (concat page ".org"))))
+    (make-directory (file-name-directory file) t)
+    (if (not (file-exists-p file))
+        (progn (find-file file)
+               (org-simple-wiki--insert-header))
+        (find-file file))))
+
+(with-eval-after-load "org"
+  (org-add-link-type "wiki" #'org-simple-wiki--open-page))
+
 (provide 'org-simple-wiki)
