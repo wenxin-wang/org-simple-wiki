@@ -52,10 +52,9 @@ Default value ~/org/wiki."
   "Open files in the default wiki"
   (interactive)
   (if (file-accessible-directory-p org-simple-wiki-location)
-      (let ((cwd default-directory))
+      (progn
         (cd org-simple-wiki-location)
-        (helm-projectile-find-file)
-        (cd cwd))
+        (helm-projectile-find-file))
     (message "`%s' is not accessible as a directory" org-simple-wiki-location)))
 
 (defun org-simple-wiki--list-keywords (dir)
