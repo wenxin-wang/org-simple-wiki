@@ -2,6 +2,11 @@
 ;; Inspired by https://caiorss.github.io/org-wiki/
 ;; Thank you caiorss!
 
+;; I never really understand all these licenses.. Hope this would not cause much trouble.
+
+;; Copyright (C) Wenxin Wang 2017.
+;; Distributed under the MIT License ( license terms are at https://opensource.org/licenses/MIT ).
+
 ;; This seems not a package but more like a bunch of helper functions.
 ;; I do not think it suits general usage, but feel free to try and change it.
 

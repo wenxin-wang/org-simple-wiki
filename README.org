@@ -1,0 +1,27 @@
+#+TITLE: Simple Wiki based on Org mode
+* Simple Org Wiki
+
+A bunch of helper funcions for a personal wiki. Pages can be grouped by
+directories, and tagged with keywords, which can be used for navigation and
+searching. Depends on `cl-lib`, `helm-projectile` and `helm-ag`.
+
+** Example
+
+#+BEGIN_SRC org 
+#+TITLE: Org Wiki
+#+WIKI_KW: org-mode wiki
+
+* Intro
+#+END_SRC
+
+** Usage
+   - customize =org-simple-wiki-locaion= to be the root directory of the wiki
+   - =M-x org-simple-wiki-find-file= for finding pages by names
+   - =M-x org-simple-wiki-find-file-by-keyword= to view full list of keywords,
+     then select one, press enter and find pages by that keyword
+   - =M-x org-simple-wiki-search-ag= for finding pages by any contents
+   - =M-x org-simple-wiki-search-keyword-ag= for finding pages by keywords
+
+* Installation
+
+Install `org-simple-wiki.el` with preferred methods. [[https://github.com/wenxin-wang/.spacemacs.d/tree/master/layers/org-simple-wiki][Here]] is an example configuration layer for [[http://spacemacs.org/][Spacemacs]].
