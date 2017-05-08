@@ -31,7 +31,8 @@ Default value ~/org/wiki."
 (defun org-simple-wiki-search-ag ()
   "Search pages"
   (interactive)
-  (helm-do-ag org-simple-wiki-location))
+  (let ((helm-ag-insert-at-point 'symbol))
+    (helm-do-ag org-simple-wiki-location)))
 
 ;;;###autoload
 (defun org-simple-wiki-search-keyword-ag (&optional word)
