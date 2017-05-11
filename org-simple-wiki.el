@@ -48,13 +48,22 @@ Default value ~/org/wiki."
       (helm-do-ag org-simple-wiki-location))))
 
 ;;;###autoload
+(defun org-simple-wiki-projectile-find-file ()
+  "Open files in the default wiki"
+  (interactive)
+  (if (file-accessible-directory-p org-simple-wiki-location)
+      (with-temp-buffer ; Prevent changing of current buffer's working directory
+        (cd org-simple-wiki-location)
+        (helm-projectile-find-file))
+    (message "`%s' is not accessible as a directory" org-simple-wiki-location)))
+
+;;;###autoload
 (defun org-simple-wiki-find-file ()
   "Open files in the default wiki"
   (interactive)
   (if (file-accessible-directory-p org-simple-wiki-location)
-      (progn
-        (cd org-simple-wiki-location)
-        (helm-projectile-find-file))
+      (helm-find-files-1 (file-name-as-directory
+                          (expand-file-name org-simple-wiki-location)))
     (message "`%s' is not accessible as a directory" org-simple-wiki-location)))
 
 (defun org-simple-wiki--list-keywords (dir)
@@ -77,7 +86,8 @@ Default value ~/org/wiki."
                           org-simple-wiki-location))
           (action . org-simple-wiki-search-keyword-ag))))
 
-(defun org-simple-wiki--insert-header ()
+;;;###autoload
+(defun org-simple-wiki-insert-header ()
   "Insert wiki header at the top of the file."
   (interactive)
   (save-excursion
@@ -95,7 +105,7 @@ Default value ~/org/wiki."
       (if buffer (switch-to-buffer buffer)
         (if (not (file-exists-p file))
             (progn (find-file file)
-                   (org-simple-wiki--insert-header))
+                   (org-simple-wiki-insert-header))
           (find-file file))))))
 
 (with-eval-after-load 'org
