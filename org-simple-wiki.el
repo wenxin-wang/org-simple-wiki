@@ -24,8 +24,10 @@ Default value ~/org/wiki."
   :type 'directory
   :group 'org-simple-wiki)
 
-(defconst org-simple-wiki--keyword "wiki_kw"
-  "The org keyword for wiki keyword, as in #+WIKI_KW: keyword1 keyword2")
+(defcustom org-simple-wiki-keyword "wiki"
+  "The org keyword for wiki keyword, as in #+WIKI: keyword1 keyword2"
+  :type 'directory
+  :group 'org-simple-wiki)
 
 ;;;###autoload
 (defun org-simple-wiki-search-ag ()
@@ -42,7 +44,7 @@ Default value ~/org/wiki."
   (setq word (if word (downcase word)
                (setq word (or (symbol-at-point) ""))))
   (with-temp-buffer ; Dirty trick for helm-ag to use customized default input
-    (insert (format "^[ \\t]*#\\+%s: %s" org-simple-wiki--keyword word))
+    (insert (format "^[ \\t]*#\\+%s: %s" org-simple-wiki-keyword word))
     (let ((helm-ag--extra-options "-G\\.org$")
           (helm-ag-insert-at-point 'paragraph))
       (helm-do-ag org-simple-wiki-location))))
@@ -71,7 +73,7 @@ Default value ~/org/wiki."
   (with-temp-buffer
     (call-process "grep" nil t nil "-r" "-h" "-o" "-P"
                   (format "(?<=#\\+%s:).*"
-                          (upcase org-simple-wiki--keyword))
+                          (upcase org-simple-wiki-keyword))
                   (expand-file-name dir))
     (remove-duplicates (split-string (buffer-string))
                        :test 'string=)))
@@ -87,6 +89,21 @@ Default value ~/org/wiki."
           (action . org-simple-wiki-search-keyword-ag))))
 
 ;;;###autoload
+(defun org-simple-wiki-insert-keyword ()
+  "Insert (selected) keywords after current point"
+  (interactive)
+  (lexical-let ((buffer (current-buffer)))
+    (defun insert-keywords (_)
+      (with-current-buffer buffer
+        (dolist (kw (helm-marked-candidates))
+          (insert " " kw)))))
+  (helm :sources
+        `((name . "A list of wiki keywords")
+          (candidates . ,(org-simple-wiki--list-keywords
+                          org-simple-wiki-location))
+          (action . insert-keywords))))
+
+;;;###autoload
 (defun org-simple-wiki-insert-header ()
   "Insert wiki header at the top of the file."
   (interactive)
@@ -94,7 +111,7 @@ Default value ~/org/wiki."
     (goto-char (point-min))
     (insert (format "#+TITLE: %s\n#+%s:\n"
                     (file-name-base (buffer-file-name))
-                    (upcase org-simple-wiki--keyword)))))
+                    (upcase org-simple-wiki-keyword)))))
 
 ;;===== wiki protocol for org-simple-wiki =====
 (defun org-simple-wiki--open-page (page)
