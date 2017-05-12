@@ -1,4 +1,5 @@
 ;;; org-simple-wiki.el --- simple wiki extension for org-mode
+;; Package-Version: 20170512.2229
 ;; Inspired by https://caiorss.github.io/org-wiki/
 ;; Thank you caiorss!
 
@@ -13,6 +14,7 @@
 (require 'cl-lib)
 (require 'helm-projectile)
 (require 'helm-ag)
+(require 'org)
 
 (defgroup org-simple-wiki nil
   "Settings for the simple org-mode-based wiki"
@@ -75,7 +77,7 @@ Default value ~/org/wiki."
                   (format "(?<=#\\+%s:).*"
                           (upcase org-simple-wiki-keyword))
                   (expand-file-name dir))
-    (remove-duplicates (split-string (buffer-string))
+    (cl-remove-duplicates (split-string (buffer-string))
                        :test 'string=)))
 
 ;;;###autoload
@@ -126,6 +128,10 @@ Default value ~/org/wiki."
           (find-file file))))))
 
 (with-eval-after-load 'org
-  (org-add-link-type "wiki" #'org-simple-wiki--open-page))
+  (org-link-set-parameters
+   "wiki"
+   :follow #'org-simple-wiki--open-page))
 
 (provide 'org-simple-wiki)
+
+;;; org-simple-wiki.el ends here
