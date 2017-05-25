@@ -73,7 +73,7 @@ Default value ~/org/wiki."
 (defun org-simple-wiki--list-keywords (dir)
   "List all keywords in a wiki"
   (with-temp-buffer
-    (call-process "grep" nil t nil "-r" "-h" "-o" "-P"
+    (call-process "ag" nil t nil "-o" "--nocolor" "--nofilename"
                   (format "(?<=#\\+%s:).*"
                           (upcase org-simple-wiki-keyword))
                   (expand-file-name dir))
@@ -115,6 +115,21 @@ Default value ~/org/wiki."
                     (file-name-base (buffer-file-name))
                     (upcase org-simple-wiki-keyword)))))
 
+;;;###autoload
+(defun org-simple-wiki-insert-link ()
+  "Insert wiki link at current point."
+  (interactive)
+  (lexical-let ((buffer (current-buffer)))
+    (defun insert-link (name)
+      (with-current-buffer buffer
+        (insert (format "[[wiki:%s][%s]]" name name)))))
+  (helm :sources
+        `((name . "A list of wiki pages")
+          (candidates
+           . ,(mapcar #'file-name-sans-extension
+                       (projectile-current-project-files)))
+          (action . insert-link))))
+
 ;;===== wiki protocol for org-simple-wiki =====
 (defun org-simple-wiki--open-page (page)
   "Open page in wiki"
@@ -127,7 +142,9 @@ Default value ~/org/wiki."
                    (org-simple-wiki-insert-header))
           (find-file file))))))
 
-(with-eval-after-load 'org
+;;;###autoload
+(defun org-simple-wiki-org-mode-init ()
+  "Run when org-mode is loaded"
   (org-link-set-parameters
    "wiki"
    :follow #'org-simple-wiki--open-page))
