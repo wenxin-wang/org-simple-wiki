@@ -106,15 +106,29 @@ Default value ~/org/wiki."
                           org-simple-wiki-location))
           (action . insert-keywords))))
 
+(defun org-simple-wiki--path-to-keywords ()
+  "Generate keywords from path"
+  (let ((offset (length (expand-file-name
+                         org-simple-wiki-location))))
+    (delete
+     ""
+     (split-string
+      (file-name-directory
+       (substring (buffer-file-name) offset))
+      "/"))))
+
 ;;;###autoload
 (defun org-simple-wiki-insert-header ()
   "Insert wiki header at the top of the file."
   (interactive)
   (save-excursion
     (goto-char (point-min))
-    (insert (format "#+TITLE: %s\n#+%s:\n"
+    (insert (format "#+TITLE: %s\n#+%s:"
                     (file-name-base (buffer-file-name))
-                    (upcase org-simple-wiki-keyword)))))
+                    (upcase org-simple-wiki-keyword)))
+    (dolist (kw (org-simple-wiki--path-to-keywords))
+      (insert " " (downcase kw)))
+    (insert "\n")))
 
 (defun org-simple-wiki--projectile-file-list ()
   "List files using projectile"
