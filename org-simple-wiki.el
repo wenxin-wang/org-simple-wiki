@@ -78,7 +78,7 @@ Default value ~/org/wiki."
                           (upcase org-simple-wiki-keyword))
                   (expand-file-name dir))
     (cl-remove-duplicates (split-string (buffer-string))
-                       :test 'string=)))
+                          :test 'string=)))
 
 ;;;###autoload
 (defun org-simple-wiki-find-file-by-keyword ()
@@ -123,12 +123,18 @@ Default value ~/org/wiki."
     (defun insert-link (name)
       (with-current-buffer buffer
         (insert (format "[[wiki:%s][%s]]" name name)))))
-  (helm :sources
-        `((name . "A list of wiki pages")
-          (candidates
-           . ,(mapcar #'file-name-sans-extension
-                       (projectile-current-project-files)))
-          (action . insert-link))))
+  (let* ((links
+          (mapcar #'file-name-sans-extension
+                  (with-temp-buffer
+                    (cd org-simple-wiki-location)
+                    (projectile-current-project-files))))
+         (actions (helm-make-actions "Insert" #'insert-link))
+         (pages `((name . "A list of wiki pages")
+                  (candidates . links)
+                  (action . actions)))
+         (new-page (helm-build-dummy-source
+                       "New page" :action actions)))
+    (helm :sources '(pages new-page))))
 
 ;;===== wiki protocol for org-simple-wiki =====
 (defun org-simple-wiki--open-page (page)
