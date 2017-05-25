@@ -58,7 +58,8 @@ Default value ~/org/wiki."
   (if (file-accessible-directory-p org-simple-wiki-location)
       (with-temp-buffer ; Prevent changing of current buffer's working directory
         (cd org-simple-wiki-location)
-        (helm-projectile-find-file))
+        (let ((projectile-sort-order 'default))
+          (helm-projectile-find-file)))
     (message "`%s' is not accessible as a directory" org-simple-wiki-location)))
 
 ;;;###autoload
@@ -115,6 +116,13 @@ Default value ~/org/wiki."
                     (file-name-base (buffer-file-name))
                     (upcase org-simple-wiki-keyword)))))
 
+(defun org-simple-wiki--projectile-file-list ()
+  "List files using projectile"
+  (with-temp-buffer
+    (cd org-simple-wiki-location)
+    (let ((projectile-sort-order 'default))
+      (projectile-current-project-files))))
+
 ;;;###autoload
 (defun org-simple-wiki-insert-link ()
   "Insert wiki link at current point."
@@ -125,9 +133,7 @@ Default value ~/org/wiki."
         (insert (format "[[wiki:%s][%s]]" name name)))))
   (let* ((links
           (mapcar #'file-name-sans-extension
-                  (with-temp-buffer
-                    (cd org-simple-wiki-location)
-                    (projectile-current-project-files))))
+                  (org-simple-wiki--projectile-file-list)))
          (actions (helm-make-actions "Insert" #'insert-link))
          (pages `((name . "A list of wiki pages")
                   (candidates . links)
