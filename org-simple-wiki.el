@@ -78,7 +78,7 @@ Default value ~/org/wiki."
                   (format "(?<=#\\+%s:).*"
                           (upcase org-simple-wiki-keyword))
                   (expand-file-name dir))
-    (cl-remove-duplicates (split-string (buffer-string))
+    (cl-remove-duplicates (split-string (buffer-string) "[ \n,]+")
                           :test 'string=)))
 
 ;;;###autoload
